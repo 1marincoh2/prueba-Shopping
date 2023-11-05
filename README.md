@@ -50,3 +50,9 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+### Demo
+
+```sh
+https://prueba-shopping.vercel.app/
+```
