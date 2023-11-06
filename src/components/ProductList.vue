@@ -88,7 +88,7 @@ onMounted(() => {
           <Column style="width: 5%">
             <template #header> Accion </template>
             <template #body="slotProps">
-              <Button v-tooltip.bottom="'Agregar Pruducto al carrito'" icon="pi pi-shopping-cart" severity="success" text raised rounded aria-label="Search"
+              <Button v-tooltip.bottom="'Agregar Producto al carrito'" icon="pi pi-shopping-cart" severity="success" text raised rounded aria-label="Search"
                 @click="addToCart(slotProps.data)" />
             </template>
           </Column>
