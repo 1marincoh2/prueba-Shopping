@@ -172,7 +172,7 @@ const endProgress = () => {
 </template>
 <style scoped>
 .scrollable-cart {
-    max-height: 400px;
+    max-height: 500px;
     /* Ajusta la altura máxima según tus necesidades */
     overflow-y: auto;
 }
