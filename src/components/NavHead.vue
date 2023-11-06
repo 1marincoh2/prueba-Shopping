@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-topbar">
+  <div class="layout-topbar justify-content-between">
     <TabMenu v-model:activeIndex="active" :model="items">
       <template #item="{ label, item, props }">
         <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>
@@ -10,7 +10,7 @@
         </router-link>
       </template>
     </TabMenu>
-    <div class="layout-topbar-menu">
+    <div >
       <i v-badge.danger="cart === 0 ? 0: cart" class="pi pi-shopping-cart p-overlay-badge  "
         @click="PageCart()" style="font-size: 1.8rem; margin-top: 10px; cursor: pointer;" />
       <button class="p-link layout-topbar-button">

@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useToast } from "@/hook/useToast";
 import { useRouter } from 'vue-router'
@@ -10,15 +10,21 @@ import Dialog from 'primevue/dialog';
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 import Rating from 'primevue/rating';
+import ProgressBar from 'primevue/progressbar';
+
+
 
 const store = useStore()
 const { show } = useToast()
 const router = useRouter()
 
 const visible = ref(false);
+const showProgressBar = ref(false);
+const value1 = ref(0);
+const interval = ref();
 
 const cart = store.state.cart.cart
-
+const cartlength = computed(() => store.getters['cart/cartItemsCount'])
 const totalPrice = computed(() => store.getters['cart/totalPrice'])
 
 const increaseProduct = (product: any) => {
@@ -34,21 +40,42 @@ const removeProduct = (product: any) => {
         show('error', 'Producto eliminado', product.title)
 }
 
-const payFinal = async () => {
-    store.dispatch('cart/clearCart');
-    visible.value = false
-    await show('info', 'Pagos', 'Su pago se a realizado con Exito')
-    router.push('/')
-}
+
+
+const closeDialog = () => {
+    visible.value = false;
+};
 const goPay = async () => {
     router.push('/')
 }
+
+
+
+const payFinal = async() => {
+    showProgressBar.value = true;
+    interval.value = setInterval(async() => {
+        let newValue = value1.value + Math.floor(Math.random() * 10);
+        if (newValue >= 100) {
+            newValue = 100;
+            await store.dispatch('cart/clearCart');
+            await endProgress();
+            await show('info', 'Pagos', 'Su pago se a realizado con Exito')    
+        }
+        value1.value = newValue;
+    }, 500);
+
+};
+const endProgress = () => {
+    clearInterval(interval.value);
+    interval.value = null;
+    closeDialog();
+};
 </script>
 
 <template >
     <div class="grid">
         <div class="col-8">
-            <div class="scrollable-cart" v-if="cart.length > 0">
+            <div class="scrollable-cart" v-if="cartlength > 0">
                 <div class="col-12 card" v-for="(item, index) in cart" :key="index">
                     <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
                         <img class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
@@ -76,7 +103,8 @@ const goPay = async () => {
                                         <span style="display: flex; align-items: center; justify-content: center;">-</span>
                                     </Button>
 
-                                    <Badge  size="large" severity="success"  style="border-radius: 4px; margin-top: 2px;; " :value="item.amount"></Badge>
+                                    <Badge size="large" severity="success" style="border-radius: 4px; margin-top: 2px;; "
+                                        :value="item.amount"></Badge>
                                     <Button aria-label="Sumar" class="p-button-sm btn-color ml-2"
                                         @click="increaseProduct(item.id)">
                                         <span style="display: flex; align-items: center; justify-content: center;">+</span>
@@ -88,7 +116,8 @@ const goPay = async () => {
                     </div>
                     <div class="flex align-items-center justify-content-between">
                         <span class="text-2xl font-semibold"></span>
-                        <Button class="p-button p-button-danger p-button-sm mr-2 mb-2" @click="removeProduct(item)">
+                        <Button v-tooltip.bottom="'Eliminar producto del carrito'"
+                            class="p-button p-button-danger p-button-sm mr-2 mb-2" @click="removeProduct(item)">
                             <i class="pi pi-trash"></i>
                         </Button>
                     </div>
@@ -125,16 +154,19 @@ const goPay = async () => {
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="visible" modal header="Pagar Producto" :style="{ width: '50rem' }"
+    <Dialog v-model:visible="visible" modal :header="showProgressBar ?'Procesando su pago...':'Pagar Producto'" :style="{ width: '50rem' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-        <h1>
-            Total a pagar : ${{ totalPrice }}
-        </h1>
-        <div class="flex align-items-center justify-content-between">
-            <span class="text-2xl font-semibold"></span>
-            <Button class="p-button p-button-success p-button-sm mr-2 mb-2" @click="payFinal()">
-                Finalizar pago
-            </Button>
+        <ProgressBar :value="value1" v-if="showProgressBar" />
+        <div v-else>
+            <h1>
+                Total a pagar: ${{ totalPrice }}
+            </h1>
+            <div class="flex align-items-center justify-content-between">
+                <span class="text-2xl font-semibold"></span>
+                <Button class="p-button p-button-success p-button-sm mr-2 mb-2" @click="payFinal">
+                    Finalizar pago
+                </Button>
+            </div>
         </div>
     </Dialog>
 </template>

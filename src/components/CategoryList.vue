@@ -84,7 +84,7 @@ onMounted(async () => {
 
             <div class="flex align-items-center justify-content-between">
               <span class="text-2xl font-semibold">{{ formatCurrency(item.price) }}</span>
-              <Button icon="pi pi-shopping-cart" rounded :severity="getSeverity(item.category)"
+              <Button icon="pi pi-shopping-cart" v-tooltip.bottom="'Agregar Pruducto al carrito'" rounded :severity="getSeverity(item.category)"
                 @click="addToCart(item)"></Button>
             </div>
           </div>
