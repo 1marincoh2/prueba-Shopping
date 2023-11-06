@@ -18,6 +18,7 @@ const loading = ref(false);
 const loadingCatAll = ref(false)
 const categoryAll = ref([])
 const category = ref<any>([])
+const catId=ref()
 
 const getAllCategory = async () => {
   try {
@@ -30,15 +31,21 @@ const getAllCategory = async () => {
     console.error(e)
   }
 }
-const getCategory = async (cat: string = 'electronics') => {
-  try {
-    loading.value = false;
-    const serviceProducts = new productService()
-    const response = await serviceProducts.categoryGet(cat)
-    category.value = response
-    loading.value = true;
-  } catch (e) {
-    console.error(e)
+const getCategory = async (cat: string) => {
+  if (cat !== '') {
+    if (cat !== catId.value) {
+      catId.value = cat;
+
+      try {
+        loading.value = false;
+        const serviceProducts = new productService();
+        const response = await serviceProducts.categoryGet(cat);
+        category.value = response;
+        loading.value = true;
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 }
 
@@ -49,7 +56,7 @@ const addToCart = (product: any) => {
 
 onMounted(async () => {
   await getAllCategory()
-  await getCategory()
+  await getCategory('electronics')
 
 })
 </script>
