@@ -147,7 +147,7 @@ const endProgress = () => {
 
                         <hr>
 
-                        <Button label="Pagar" @click="visible = true" icon="pi pi-money-bill" iconPos="right" />
+                        <Button label="Pagar" :disabled="cartlength === 0"  @click="visible = true" icon="pi pi-money-bill" iconPos="right" />
 
                     </div>
                 </div>
